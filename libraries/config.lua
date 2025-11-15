@@ -9,7 +9,7 @@ local defaultConfig = {
     modem = "top",
     channel = 420,
     rotors = {"front", "right", "back", "left"},
-    level = "primär"
+    level = "primar"
 }
 
 -- JSON Hilfsfunktionen
