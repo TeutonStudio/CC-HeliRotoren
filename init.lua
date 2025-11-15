@@ -3,7 +3,7 @@ local LIBS = {
     {file = "startup.lua",  save = "mylib"},
     {file = "libaries/config.lua",  save = "utils"},
     {file = "libaries/rotor.lua", save = "config"},
-    {file = "libaries/vektor.lua", save = "config"},
+    {file = "libaries/vektor.lua", save = "config"}
 }
 
 local REPO = "al_xnd_r/cc-my-library"
