@@ -8,7 +8,7 @@ local function kreis(winkel)
     return vector.new(x,y,1)
 end
 -- Ermittelt die Rotorstellung nach dem azimuthWinkel und der steurung vec=(pitch,roll,collective)
-local function rotorWinkel(azimuth,vec) return vec:dot(kreis(math.rad(azimuth))--kreis(math.rad(azimuth + 180)):dot(vec) end
+local function rotorWinkel(azimuth,vec) return vec:dot(kreis(math.rad(azimuth)) end --kreis(math.rad(azimuth + 180)):dot(vec) end
 
 -- Indexiert die eingabe Seiten des Rechners (Kompatibel für Vertikal & Horizontal)
 local function seitenIndex(seite) -- TODO auf vierlistiges Argument umprogrammieren, dass einem find() -> int entspricht
