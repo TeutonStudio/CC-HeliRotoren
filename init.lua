@@ -1,7 +1,7 @@
 -- update-all  (speichere als Datei "update-all")
 
 local LIBS = {
-    {file = "libraries/config" type = "lua"},   -- Ordner libraries → libraries
+    {file = "libraries/config", type = "lua"},   -- Ordner libraries → libraries
     {file = "libraries/rotor", type = "lua"},
     {file = "libraries/vektor", type = "lua"},
     {file = "startup", type = "lua"}
