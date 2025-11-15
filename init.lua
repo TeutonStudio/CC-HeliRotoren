@@ -1,22 +1,43 @@
--- update-all
+-- update-all  (speichere als Datei "update-all")
+
 local LIBS = {
-    {file = "startup.lua",  save = "mylib"},
-    {file = "libaries/config.lua",  save = "utils"},
-    {file = "libaries/rotor.lua", save = "config"},
-    {file = "libaries/vektor.lua", save = "config"}
+    {file = "startup.lua"},          -- wird als "init" gespeichert
+    {file = "libraries/config.lua"},   -- Ordner libraries → libraries
+    {file = "libraries/rotor.lua"},
+    {file = "libraries/vektor.lua"},
+    -- falls du noch startup.lua oder andere willst, einfach hinzufügen
 }
 
-local REPO = "al_xnd_r/cc-my-library"
+local REPO   = "TeutonStudio/CC-HeliRotoren"   -- korrekter Repo-Name
 local BRANCH = "main"
 
-for idx, lib in ipairs(LIBS) do
-    local url = "https://github.com/TeutonStudio/CC-HeliRotoren/blob/main/" .. lib
+for _, lib in ipairs(LIBS) do
+    -- WICHTIG: raw.githubusercontent.com statt github.com/blob !
+    local url = ("https://raw.githubusercontent.com/%s/%s/%s"):format(REPO, BRANCH, lib.file)
+    
+ys
     print("Lade " .. lib.file .. "...")
 
-    if fs.exists(lib.file) then fs.delete(lib.file) end
+    -- Alte Datei löschen (falls vorhanden)
+    if fs.exists(lib.file) then
+        fs.delete(lib.file)
+    end
 
-    if pcall(shell.run, "wget", url, lib.file) then print("  ✓ " .. lib.file)
-    else print("  ✗ Fehler bei " .. lib.file) end
+    -- Pfad für Ordner anlegen, falls nicht vorhanden
+    local dir = fs.getDir(lib.file)
+    if dir ~= "" and not fs.exists(dir) then
+        fs.makeDir(dir)
+    end
+
+    -- Download
+    local ok, err = pcall(shell.run, "wget", url, lib.file)
+
+    if ok then
+        print("  ✓ " .. lib.file .. " → " .. lib.file)
+    else
+        print("  ✗ Fehler bei " .. lib.file)
+        print("    URL war: " .. url)
+    end
 end
 
-print("Alle Libraries aktualisiert!")
+print("\nFertig! Alle Dateien aktualisiert.")
