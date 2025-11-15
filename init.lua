@@ -15,7 +15,6 @@ for _, lib in ipairs(LIBS) do
     -- WICHTIG: raw.githubusercontent.com statt github.com/blob !
     local url = ("https://raw.githubusercontent.com/%s/%s/%s"):format(REPO, BRANCH, lib.file)
     
-ys
     print("Lade " .. lib.file .. "...")
 
     -- Alte Datei löschen (falls vorhanden)
