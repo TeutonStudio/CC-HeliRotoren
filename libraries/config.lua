@@ -90,7 +90,7 @@ function config.loadConfig()
     else error("rotors fehlt oder ist kein Array in config.json!") end
     
     -- 7. Level validieren
-    if type(data.level) == "table" then cfg.level = data.level end
+    if type(data.level) == "string" then cfg.level = data.level end
 
     return cfg
 end
