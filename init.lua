@@ -1,10 +1,10 @@
 -- update-all  (speichere als Datei "update-all")
 
 local LIBS = {
-    {file = "startup.lua"},          -- wird als "init" gespeichert
     {file = "libraries/config.lua"},   -- Ordner libraries → libraries
     {file = "libraries/rotor.lua"},
     {file = "libraries/vektor.lua"},
+    {file = "startup.lua"}
     -- falls du noch startup.lua oder andere willst, einfach hinzufügen
 }
 
