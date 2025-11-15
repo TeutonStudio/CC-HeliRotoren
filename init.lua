@@ -9,18 +9,14 @@ local LIBS = {
 local REPO = "al_xnd_r/cc-my-library"
 local BRANCH = "main"
 
-for _, lib in ipairs(LIBS) do
-    local url = "https://raw.githubusercontent.com/" .. REPO .. "/" .. BRANCH .. "/" .. lib.file
+for idx, lib in ipairs(LIBS) do
+    local url = "https://github.com/TeutonStudio/CC-HeliRotoren/blob/main/" .. lib
     print("Lade " .. lib.file .. "...")
 
-    if fs.exists(lib.save) then fs.delete(lib.save) end
+    if fs.exists(lib.file) then fs.delete(lib.file) end
 
-    local ok = pcall(shell.run, "wget", url, lib.save)
-    if ok then
-        print("  ✓ " .. lib.file)
-    else
-        print("  ✗ Fehler bei " .. lib.file)
-    end
+    if pcall(shell.run, "wget", url, lib.file) then print("  ✓ " .. lib.file)
+    else print("  ✗ Fehler bei " .. lib.file) end
 end
 
 print("Alle Libraries aktualisiert!")
