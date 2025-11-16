@@ -1,5 +1,6 @@
 -- startup.lua
 local CFGV = require("libraries/config") -- Konfigurationsverwalter
+local KV = require("libraries/kommunikation") -- Kommunikationsverwalter
 local VR = require("libraries/vektor") -- Vektorraum Rechnung
 local RV = require("libraries/rotor") -- Rotorenverwalter
 
@@ -10,59 +11,25 @@ if not modem then error("Kein Modem an '" .. cfg.modem .. "' gefunden! Überprü
 local rotorSeiten = cfg.rotors
 
 -- ==== Zustand für Verbindungserkennung ====
-local verbindungBestaetigt = false
-
--- ==== 2. Haupt-Loop ======================================================
-local globalFWD = vector.new(0, 0, 1)
-local pitch = 40
-local roll = 0
-local coll = 0
-local yaw = 0
+local verbindung = false
+local steuer = vector.new()
 
 print("[INFO] Starte Rotor-Steuerung mit Modem: " .. cfg.modem)
 print("[INFO] Rotoren: " .. table.concat(rotorSeiten, ", "))
 modem.open(cfg.channel)
 
 while true do
+    local quaternionHaupt,quaternionHeck
     local azimuth = 0
-    local steuer = vector.new()
-
-    if cfg.level == "primar" then
-        local event, side, channel, replyChannel, quaternionHeck, dist = os.pullEvent("modem_message")
-        if channel == cfg.channel then
-            local quaternionLokal = ship.getQuaternion()
-            modem.transmit(replyChannel, cfg.channel, quaternionLokal)
-            azimuth = RV.azimuth(quaternionLokal, quaternionHeck)
-            steuer = vector.new(pitch, roll, coll)
-
-            -- Bestätigung: Primär hat Sekundär gefunden
-            if not verbindungBestaetigt then
-                print("[ERFOLG] PRIMÄR: Verbindung zum SEKUNDÄR hergestellt! (Kanal " .. cfg.channel .. ")")
-                verbindungBestaetigt = true
-            end
-
-            print("Azimuth: " .. azimuth)
-        end
-
-    elseif cfg.level == "sekundar" then
-        local quaternionHeck = ship.getQuaternion()
-        modem.transmit(cfg.channel, cfg.channel, quaternionHeck)
-
-        local event, side, channel, replyChannel, quaternion, dist = os.pullEvent("modem_message")
-        if channel == cfg.channel then
-            azimuth = RV.azimuth(quaternion, quaternionHeck)
-            steuer = vector.new(0, 0, yaw)
-
-            -- Bestätigung: Sekundär hat Primär gefunden
-            if not verbindungBestaetigt then
-                print("[ERFOLG] SEKUNDÄR: Verbindung zum PRIMÄR empfangen! (Kanal " .. cfg.channel .. ")")
-                verbindungBestaetigt = true
-            end
-        end
-    end
-
-    for idx, seite in ipairs(rotorSeiten) do
-        RV.setzeRotor(seite, azimuth, steuer)
-    end
+	
+    KV.sendeKommunikation(modem,cfg,false)
+    local event, side, channel, replyChannel, message, dist = os.pullEvent("modem_message")
+	if channel == cfg.channel and channel == replyChannel then
+        quaternionHaupt,quaternionHeck = KV.interpretiereKommunikation(message,modem,{verbindung = verbindung, channel = channel})
+		steuer = KV.interpretiereSteuerung(message,cfg.level,{steurung = steurung}) end
+    if quaternionHaupt and quaternionHeck then
+    	azimuth = RV.azimuth(quaternionHaupt, quaternionHeck) end
+    if steuer then for idx, seite in ipairs(rotorSeiten) do
+        RV.setzeRotor(seite, azimuth, steuer) end end
     sleep(0.01)
 end
