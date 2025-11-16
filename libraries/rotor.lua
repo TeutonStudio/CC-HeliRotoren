@@ -34,7 +34,7 @@ end
 function rotor.azimuth(q1,q2)
     x1, y1, z1 = VR.erhalteVektorraum(q1)
     x2, y2, z2 = VR.erhalteVektorraum(q2)
-    return VR.orientierterWinkel(x1,x2,y1)
+    return VR.orientierterWinkel(x1,z2,y1)
 end
 
 return rotor
