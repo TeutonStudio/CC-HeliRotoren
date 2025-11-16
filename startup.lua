@@ -31,6 +31,7 @@ parallel.waitForAny(
 
             if channel == cfg.channel then  -- Nur unser Kanal
                 -- Quaternion-Austausch
+                KV.interpretiereSteuerung(message, cfg.level, {steurung = steuer})
                 local qH, qK = KV.interpretiereKommunikation(message, cfg.level, {verbindung = verbindung, channel = channel})
                 if qH and qK then
                     quaternionHaupt, quaternionHeck = qH, qK
@@ -38,12 +39,6 @@ parallel.waitForAny(
                     for _, seite in ipairs(rotorSeiten) do
                         RV.setzeRotor(seite, azimuth, steuer)
                     end
-                end
-
-                -- Steuerung
-                local neueSteuer = KV.interpretiereSteuerung(message, cfg.level, {steurung = steuer})
-                if neueSteuer then
-                    steuer = neueSteuer
                 end
             end
         end
