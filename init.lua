@@ -24,7 +24,7 @@ for _, lib in ipairs(LIBS) do
     if dir ~= "" and not fs.exists(dir) then fs.makeDir(dir)end
 
     -- Download
-    local ok, err = pcall(shell.run, "wget", url, lib.file)
+    local ok, err = pcall(shell.run, "wget", url, lib.file.."."..lib.type)
 
     if ok then
         print("  ✓ " .. lib.file .. " → " .. lib.file)
