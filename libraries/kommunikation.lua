@@ -10,6 +10,8 @@ function kommunikation.identifiziereModem(config)
         error("Kein Modem an '" .. config.modem .. "' gefunden!") end
     if not modem.isOpen(config.channel) then
         modem.open(config.channel) end
+    if not modem.isOpen(config.steuerung) then
+        modem.open(config.steuerung) end
     config.modem = modem
 end
 
