@@ -28,13 +28,14 @@ function kommunikation.interpretiereKommunikation(nachricht, config, status)
     else
         print(verbindungsAusgabe(config.rolle,config.channel))
         status.verbindung = true end
-    if config.rolle == "primar" and nachricht.sender == "sekundar" then
+    local p_s = config.rolle == "primar" and nachricht.sender == "sekundar"
+    local s_p = config.rolle == "sekundar" and nachricht.sender == "primar"
+    if p_s then
         status.qK = nachricht.quaternionHeck
         status.qH = quaternion.fromShip() end
-    if config.rolle == "sekundar" and nachricht.sender == "primar" then
+    if s_p then
         status.qH = nachricht.quaternionHaupt
         status.qK = quaternion.fromShip() end
-    
 end
 
 function kommunikation.interpretiereSteuerung(nachricht, eingabe)

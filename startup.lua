@@ -10,10 +10,6 @@ print("[INFO] Rotoren: " .. table.concat(cfg.rotoren, ", "))
 KV.identifiziereModem(cfg)
 
 local werte = {verbindung = false, quaternionHaupt = nil, quaternionHeck = nil, steuerung = { p=0, r=0, c=0, y=0 }}
--- local verbindung = false
--- local steuer = 
--- local quaternionHaupt, quaternionHeck
-
 
 -- Non-blocking: Senden in separater Schleife
 parallel.waitForAny(
