@@ -23,7 +23,9 @@ end
 
 -- Empfang: Primär <-> Sekundär
 function kommunikation.interpretiereKommunikation(nachricht, config, status)
-    if not status.verbindung and not nachricht.sender == config.rolle then
+    if status.verbindung or nachricht.sender == config.rolle then
+        -- TODO
+    else
         print(verbindungsAusgabe(config.rolle,config.channel))
         status.verbindung = true end
     if config.rolle == "primar" and nachricht.sender == "sekundar" then

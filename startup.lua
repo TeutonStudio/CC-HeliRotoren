@@ -17,15 +17,15 @@ local werte = {verbindung = false, quaternionHaupt = nil, quaternionHeck = nil, 
 
 -- Non-blocking: Senden in separater Schleife
 parallel.waitForAny(
-    KV.sendeKommunikation(cfg, false, 0,02),
+    KV.sendeKommunikation(cfg, false, 0.02),
     RV.aktualisiereRotoren(cfg, werte, 0.02),
     function() -- Empfänger & Verarbeitung
         while true do
             local event, seite, channel, replyChannel, nachricht, distanz = os.pullEvent("modem_message")
 
-            if channel == cfg.steuerung and nachricht then 
+            if channel == cfg.steuerung and nachricht then
                 KV.interpretiereSteuerung(nachricht, werte) end
-            if channel == cfg.channel and nachricht then  
+            if channel == cfg.channel and nachricht then
                 KV.interpretiereKommunikation(nachricht, cfg, werte) end
         end
     end
