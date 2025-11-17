@@ -2,7 +2,7 @@ local CFGV = require("libraries/config")
 local KV = require("libraries/kommunikation")
 local VR = require("libraries/vektor")
 local RV = require("libraries/rotor")
-local PID   = require("libraries/steurung")
+local PID   = require("libraries/steuerung")
 
 local cfg = CFGV.loadConfig()
 print("[INFO] Starte Rotor-Steuerung mit Modem: " .. cfg.modem)
