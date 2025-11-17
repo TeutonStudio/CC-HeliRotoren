@@ -3,6 +3,7 @@
 local LIBS = {
     {file = "libraries/config", type = "lua"},
     {file = "libraries/kommunikation", type = "lua"},
+    {file = "libraries/steuerung", type = "lua"},
     {file = "libraries/rotor", type = "lua"},
     {file = "libraries/vektor", type = "lua"},
     {file = "startup", type = "lua"}

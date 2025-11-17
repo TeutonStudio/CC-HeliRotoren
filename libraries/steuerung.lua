@@ -1,8 +1,8 @@
--- libraries/steurung.lua
-local steurung = {}
+-- libraries/steuerung.lua
+local steuerung = {}
 
 -- PID-Controller Klasse
-function steurung.new(Kp, Ki, Kd, integralLimit, outputLimit)
+function steuerung.new(Kp, Ki, Kd, integralLimit, outputLimit)
     local self = {
         Kp = Kp or 1,
         Ki = Ki or 0,
@@ -13,11 +13,11 @@ function steurung.new(Kp, Ki, Kd, integralLimit, outputLimit)
         lastError = 0,
         lastTime = os.clock()
     }
-    return setmetatable(self, {__index = steurung})
+    return setmetatable(self, {__index = steuerung})
 end
 
 -- Aufruf: pid:calculate(soll, ist) → Ausgang
-function steurung:calculate(soll, ist)
+function steuerung:calculate(soll, ist)
     local now = os.clock()
     local dt = now - self.lastTime
     if dt <= 0 then return 0 end
@@ -43,10 +43,10 @@ function steurung:calculate(soll, ist)
     return output
 end
 
-function steurung:reset()
+function steuerung:reset()
     self.integral = 0
     self.lastError = 0
     self.lastTime = os.clock()
 end
 
-return steurung
+return steuerung
