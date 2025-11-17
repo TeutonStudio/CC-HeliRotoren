@@ -27,7 +27,7 @@ parallel.waitForAny(
         while true do
             local event, seite, channel, replyChannel, nachricht, distanz = os.pullEvent("modem_message")
 
-            if channel == cfg.channel then  -- Nur unser Kanal
+            if channel == cfg.channel and nachricht then  -- Nur unser Kanal
                 -- Quaternion-Austausch
                 local qH, qK
                 local werte = {verbindung = verbindung, quaternionHaupt = qH, quaternionHeck = qK, steuerung = steuer}
