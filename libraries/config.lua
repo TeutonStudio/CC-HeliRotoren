@@ -8,8 +8,8 @@ local CONFIG_FILE = "config.json"
 local defaultConfig = {
     modem = "top",
     channel = 420,
-    rotors = {"front", "right", "back", "left"},
-    level = "primar"
+    rotoren = {"front", "right", "back", "left"},
+    rolle = "primar"
 }
 
 -- JSON Hilfsfunktionen
@@ -31,7 +31,7 @@ function config.loadConfig()
     local cfg = {
         modem = defaultConfig.modem,
         channel = defaultConfig.channel,
-        rotors = {}
+        rotoren = {}
     }
 
     -- 1. Existiert die Datei?
@@ -46,7 +46,7 @@ function config.loadConfig()
 
         cfg.modem = defaultConfig.modem
         cfg.channel = defaultConfig.channel
-        cfg.rotors = defaultConfig.rotors
+        cfg.rotoren = defaultConfig.rotoren
         return cfg
     end
 
@@ -82,15 +82,15 @@ function config.loadConfig()
     end
 
     -- 6. Rotoren validieren
-    if type(data.rotors) == "table" then
+    if type(data.rotoren) == "table" then
         local validRotors = {}
-        for _, name in ipairs(data.rotors) do table.insert(validRotors, name) end
-        if #validRotors > 0 then cfg.rotors = validRotors
+        for _, name in ipairs(data.rotoren) do table.insert(validRotors, name) end
+        if #validRotors > 0 then cfg.rotoren = validRotors
         else error("Keine gültigen Rotoren in config.json gefunden!") end
     else error("rotors fehlt oder ist kein Array in config.json!") end
     
-    -- 7. Level validieren
-    if type(data.level) == "string" then cfg.level = data.level end
+    -- 7. Rolle validieren
+    if type(data.rolle) == "string" then cfg.rolle = data.rolle end
 
     return cfg
 end

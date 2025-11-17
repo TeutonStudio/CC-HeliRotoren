@@ -16,7 +16,7 @@ local function seitenIndex(seite) -- TODO auf vierlistiges Argument umprogrammie
     if seite == "top"    then return 0 end
     if seite == "right"  then return 1 end
     if seite == "back"   then return 2 end
-    if seite == "bottom" then return 2 end 
+    if seite == "bottom" then return 2 end
     if seite == "left"   then return 3 end
 end
 
@@ -29,6 +29,11 @@ function rotor.setzeRotor(seite,azimuth,vec)
     	local rotorWinkelDef = rotor.setFlapAngle
     	if rotorWinkelDef then rotorWinkelDef(korWinkel) end
 	else end
+end
+
+function rotor.setzeRotoren(config,azimuth,vec)
+    for idx, seite in ipairs(config.rotoren) do
+        rotor.setzeRotor(seite, azimuth, vec) end
 end
 
 function rotor.azimuth(q1,q2)
