@@ -26,10 +26,11 @@ function kommunikation.interpretiereKommunikation(nachricht, config, status)
     if not status.verbindung then
         print(verbindungsAusgabe(config.rolle,config.channel))
         status.verbindung = true end
-    status.qH,status.qK = ship.quaternionHaupt, nachricht.quaternionHeck
     if config.rolle == "primar" and nachricht.sender == "sekundar" then
+        status.qK = nachricht.quaternionHeck
         status.qH = quaternion.fromShip() end
     if config.rolle == "sekundar" and nachricht.sender == "primar" then
+        status.qH = nachricht.quaternionHaupt
         status.qK = quaternion.fromShip() end
     
 end
@@ -58,7 +59,7 @@ function kommunikation.sendeKommunikation(config, nachricht)
         lastStatus = os.clock()
         config.modem.transmit(config.channel, config.channel, {
             sender = config.rolle.."-steurung-info",
-            position = ship.getWorldPosition(),
+            position = ship.getWorldspacePosition(),
             linearGeschw = VR.lokaleLinearGeschwindigkeit(),
             winkelGeschw = VR.lokaleWinkelGeschwindigkeit()
         } ) end
