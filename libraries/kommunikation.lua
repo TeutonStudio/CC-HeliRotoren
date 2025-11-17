@@ -67,6 +67,7 @@ function kommunikation.sendeKommunikation(config, nachricht, delta)
                 linearGeschw = VR.lokaleLinearGeschwindigkeit(),
                 winkelGeschw = VR.lokaleWinkelGeschwindigkeit()
             } ) end
+        if config.rolle == "sekundar" then sleep(delta/2) end
         local packet = nachricht or kommunikation.erhalteNachricht(config.rolle)
         config.modem.transmit(config.channel, config.channel, packet)
         sleep(delta)
