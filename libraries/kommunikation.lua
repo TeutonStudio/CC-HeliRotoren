@@ -36,7 +36,7 @@ function kommunikation.interpretiereKommunikation(nachricht, config, status)
 end
 
 function kommunikation.interpretiereSteuerung(nachricht, eingabe)
-    if nachricht.sender == "steurung" then
+    if nachricht.sender == "steuerung" then
         eingabe.p = nachricht.pitch or 0
         eingabe.r = nachricht.roll or 0
         eingabe.c = nachricht.coll or 0
@@ -58,7 +58,7 @@ function kommunikation.sendeKommunikation(config, nachricht)
     if os.clock() - (lastStatus or 0) > .05 then
         lastStatus = os.clock()
         config.modem.transmit(config.channel, config.channel, {
-            sender = config.rolle.."-steurung-info",
+            sender = config.rolle.."-steuerung-info",
             position = ship.getWorldspacePosition(),
             linearGeschw = VR.lokaleLinearGeschwindigkeit(),
             winkelGeschw = VR.lokaleWinkelGeschwindigkeit()

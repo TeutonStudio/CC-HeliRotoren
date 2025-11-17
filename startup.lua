@@ -9,10 +9,10 @@ print("[INFO] Starte Rotor-Steuerung mit Modem: " .. cfg.modem)
 print("[INFO] Rotoren: " .. table.concat(cfg.rotoren, ", "))
 KV.identifiziereModem(cfg)
 
-
-local verbindung = false
-local steuer = { p=0, r=0, c=0, y=0 }
-local quaternionHaupt, quaternionHeck
+local werte = {verbindung = false, quaternionHaupt = nil, quaternionHeck = nil, steuerung = { p=0, r=0, c=0, y=0 }}
+-- local verbindung = false
+-- local steuer = 
+-- local quaternionHaupt, quaternionHeck
 
 
 -- Non-blocking: Senden in separater Schleife
@@ -28,16 +28,12 @@ parallel.waitForAny(
             local event, seite, channel, replyChannel, nachricht, distanz = os.pullEvent("modem_message")
 
             if channel == cfg.channel and nachricht then  -- Nur unser Kanal
-                -- Quaternion-Austausch
-                local qH, qK
-                local werte = {verbindung = verbindung, quaternionHaupt = qH, quaternionHeck = qK, steuerung = steuer}
                 KV.interpretiereKommunikation(nachricht, cfg, werte)
                 KV.interpretiereSteuerung(nachricht, werte)
                 
-                if qH and qK then
-                    quaternionHaupt, quaternionHeck = qH, qK
-                    local azimuth = RV.azimuth(quaternionHaupt, quaternionHeck)
-                    RV.setzeRotoren(cfg, azimuth, VR.errechneSteurung(cfg.rolle,steuer)) end
+                if werte.quaternionHaupt and werte.quaternionHeck then
+                    local azimuth = RV.azimuth(werte.quaternionHaupt, werte.quaternionHeck)
+                    RV.setzeRotoren(cfg, azimuth, VR.errechneSteurung(cfg.rolle,werte.steuerung)) end
                 
             end
         end
