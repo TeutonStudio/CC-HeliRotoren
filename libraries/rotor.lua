@@ -45,4 +45,14 @@ function rotor.azimuth(q1,q2)
     return VR.orientierterWinkel(x1,z2,y1)
 end
 
+
+function rotor.aktualisiereRotoren(config, werte, delta) -- Rotorsteuerung
+    while true do
+        if werte.quaternionHaupt and werte.quaternionHeck then
+            rotor.setzeRotoren(config,werte,rotor.azimuth,VR.errechneSteurung) end
+        sleep(delta)
+    end
+end
+
+
 return rotor

@@ -54,17 +54,20 @@ end
 
 local lastStatus = 0
 -- Senden
-function kommunikation.sendeKommunikation(config, nachricht)
-    if os.clock() - (lastStatus or 0) > .05 then
-        lastStatus = os.clock()
-        config.modem.transmit(config.channel, config.channel, {
-            sender = config.rolle.."-steuerung-info",
-            position = ship.getWorldspacePosition(),
-            linearGeschw = VR.lokaleLinearGeschwindigkeit(),
-            winkelGeschw = VR.lokaleWinkelGeschwindigkeit()
-        } ) end
-    local packet = nachricht or kommunikation.erhalteNachricht(config.rolle)
-    config.modem.transmit(config.channel, config.channel, packet)
+function kommunikation.sendeKommunikation(config, nachricht, delta)
+    while true do
+        if os.clock() - (lastStatus or 0) > delta then
+            lastStatus = os.clock()
+            config.modem.transmit(config.channel, config.channel, {
+                sender = config.rolle.."-steuerung-info",
+                position = ship.getWorldspacePosition(),
+                linearGeschw = VR.lokaleLinearGeschwindigkeit(),
+                winkelGeschw = VR.lokaleWinkelGeschwindigkeit()
+            } ) end
+        local packet = nachricht or kommunikation.erhalteNachricht(config.rolle)
+        config.modem.transmit(config.channel, config.channel, packet)
+        sleep(delta)
+    end
 end
 
 return kommunikation
