@@ -31,9 +31,12 @@ function rotor.setzeRotor(seite,azimuth,vec)
 	else end
 end
 
-function rotor.setzeRotoren(config,azimuth,vec)
+function rotor.setzeRotoren(config,werte,azimuth,steuerung)
     for idx, seite in ipairs(config.rotoren) do
-        rotor.setzeRotor(seite, azimuth, vec) end
+        rotor.setzeRotor(seite, 
+            azimuth(werte.quaternionHaupt, werte.quaternionHeck),
+            steuerung(config.rolle,werte.steuerung)
+        ) end
 end
 
 function rotor.azimuth(q1,q2)

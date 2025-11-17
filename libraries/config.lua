@@ -7,7 +7,8 @@ local CONFIG_FILE = "config.json"
 -- Standard-Konfiguration
 local defaultConfig = {
     modem = "top",
-    channel = 420,
+    channel = 69,
+    steuerung = 420,
     rotoren = {"front", "right", "back", "left"},
     rolle = "primar"
 }
@@ -81,7 +82,16 @@ function config.loadConfig()
         cfg.channel = defaultConfig.channel
     end
 
-    -- 6. Rotoren validieren
+    -- 6. Steuerung validieren (0–65535)
+    local steuer = data.steuerung
+    if type(steuer) == "number" and steuer >= 0 and steuer <= 65535 and math.floor(steuer) == steuer then
+        cfg.steuerung = steuer
+    else
+        print("[WARN] Ungültiger Channel '" .. tostring(steuer) .. "' → nutze " .. defaultConfig.steuerung)
+        cfg.steuerung = defaultConfig.steuerung
+    end
+
+    -- 7. Rotoren validieren
     if type(data.rotoren) == "table" then
         local validRotors = {}
         for _, name in ipairs(data.rotoren) do table.insert(validRotors, name) end
@@ -89,7 +99,7 @@ function config.loadConfig()
         else error("Keine gültigen Rotoren in config.json gefunden!") end
     else error("rotors fehlt oder ist kein Array in config.json!") end
     
-    -- 7. Rolle validieren
+    -- 8. Rolle validieren
     if type(data.rolle) == "string" then cfg.rolle = data.rolle end
 
     return cfg

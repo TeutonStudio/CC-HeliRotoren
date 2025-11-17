@@ -27,15 +27,16 @@ parallel.waitForAny(
         while true do
             local event, seite, channel, replyChannel, nachricht, distanz = os.pullEvent("modem_message")
 
+            if channel == cfg.steuerung and nachricht then  -- Nur unser Kanal
+                KV.interpretiereSteuerung(nachricht, werte) end
             if channel == cfg.channel and nachricht then  -- Nur unser Kanal
-                KV.interpretiereKommunikation(nachricht, cfg, werte)
-                KV.interpretiereSteuerung(nachricht, werte)
-                
-                if werte.quaternionHaupt and werte.quaternionHeck then
-                    local azimuth = RV.azimuth(werte.quaternionHaupt, werte.quaternionHeck)
-                    RV.setzeRotoren(cfg, azimuth, VR.errechneSteurung(cfg.rolle,werte.steuerung)) end
-                
-            end
+                KV.interpretiereKommunikation(nachricht, cfg, werte) end
+        end
+    end,
+    function() -- Rotorsteuerung
+        while true do
+            if werte.quaternionHaupt and werte.quaternionHeck then
+                RV.setzeRotoren(cfg,werte,RV.azimuth,VR.errechneSteurung) end
         end
     end
 )
