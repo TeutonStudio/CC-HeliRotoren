@@ -63,7 +63,7 @@ function kommunikation.sendeKommunikation(config, nachricht, delta)
     while true do
         if os.clock() - (lastStatus or 0) > delta then
             lastStatus = os.clock()
-            config.modem.transmit(config.channel, config.channel, {
+            config.modem.transmit(config.steuerung, config.steuerung, {
                 sender = config.rolle.."-steuerung-info",
                 position = ship.getWorldspacePosition(),
                 linearGeschw = VR.lokaleLinearGeschwindigkeit(),
