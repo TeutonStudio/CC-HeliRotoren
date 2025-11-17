@@ -74,4 +74,14 @@ function kommunikation.sendeKommunikation(config, nachricht, delta)
     end
 end
 
+function kommunikation.empfangeKommunikation(config, werte)
+    while true do
+        local event, seite, channel, replyChannel, nachricht, distanz = os.pullEvent("modem_message")
+        if channel == config.channel and nachricht then
+            kommunikation.interpretiereKommunikation(nachricht, config, werte) end
+        if channel == config.steuerung and nachricht then
+            kommunikation.interpretiereSteuerung(nachricht, werte) end
+    end
+end
+
 return kommunikation
