@@ -5,6 +5,8 @@ local VR = require("libraries/vektor")
 
 -- Identifiziert ob das Modem an config.modem seite ist und schreibt das peripheral in die config
 function kommunikation.identifiziereModem(config)
+    print("[INFO] Starte Rotor-Steuerung auf Kanal: " .. cfg.channel)
+    print("[INFO] Rotoren: " .. table.concat(cfg.rotoren, ", "))
     local modem = peripheral.wrap(config.modem)
     if not modem then 
         error("Kein Modem an '" .. config.modem .. "' gefunden!") end

@@ -5,8 +5,6 @@ local RV = require("libraries/rotor")
 local PID   = require("libraries/steuerung")
 
 local cfg = CFGV.loadConfig()
-print("[INFO] Starte Rotor-Steuerung auf Kanal: " .. cfg.channel)
-print("[INFO] Rotoren: " .. table.concat(cfg.rotoren, ", "))
 KV.identifiziereModem(cfg)
 
 local werte = {verbindung = false, quaternionHaupt = nil, quaternionHeck = nil, steuerung = { p=0, r=0, c=0, y=0 }}
