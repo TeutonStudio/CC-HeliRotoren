@@ -55,10 +55,10 @@ function rotor.aktualisiereRotoren(config, werte, delta) -- Rotorsteuerung
                     rotor.setzeRotor(seite,winkel) end
             end
             if config.rolle == "sekundar" then 
-                rotor.setzeRotoren(config,werte.steuerung.y)
-            end
-            sleep(delta) end
-    end
+                rotor.setzeRotoren(config,werte.steuerung.y) end
+        end
+        sleep(delta) end
+    
 end
 
 
