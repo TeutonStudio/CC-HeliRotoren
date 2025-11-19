@@ -6,7 +6,6 @@ local CONFIG_FILE = "config.json"
 
 -- Standard-Konfiguration
 local defaultConfig = {
-    modem = "top",
     channel = 69,
     rolle = "primar"
 }
@@ -28,8 +27,9 @@ end
 -- ==== 2. Config laden & validieren ========================================
 function config.loadConfig()
     local cfg = {
-        modem = defaultConfig.modem,
         channel = defaultConfig.channel,
+        rolle = defaultConfig.rolle,
+        modem = "",
         rotoren = {}
     }
 

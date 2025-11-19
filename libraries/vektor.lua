@@ -18,9 +18,10 @@ function vektor.gerichteterWinkel(vec1,vec2)
 end
 
 function vektor.orientierterWinkel(vec1, vec2, up)
-    local sinWinkel = vec1:normalize():cross(vec2:normalize()):dot(up:normalize())
-    local cosWinkel = vec1:normalize():dot(vec2:normalize())
-    return math.deg(math.atan2(sinWinkel, cosWinkel))
+    local v = vec1:normalize()
+    local s = vec2:normalize()
+    local o = up:normalize()
+    return math.deg(math.atan2(v:cross(s):dot(o),v:dot(s)))
 end
 
 local function GlobalNachLokal(vel)
