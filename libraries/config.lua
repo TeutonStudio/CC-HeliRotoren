@@ -65,9 +65,10 @@ function config.loadConfig()
 
     -- 4. Rolle validieren
     if type(data.rolle) == "string" then cfg.rolle = data.rolle end
+    local isPrimar = data.rolle == "primar"
 
     -- 5. Modem validieren
-    cfg.modem = "top" and data.rolle == "primar" or "front"
+    cfg.modem = isPrimar and "top" or "front"
 
     -- 6. Channel validieren (0–65535)
     local channel = data.channel
@@ -79,7 +80,7 @@ function config.loadConfig()
     end
 
     -- 7. Rotoren validieren
-    cfg.rotoren = {"front", "right", "back", "left"} and data.rolle == "primar" or {"top", "right", "bottom", "left"}
+    cfg.rotoren = isPrimar and {"front", "right", "back", "left"} or {"top", "right", "bottom", "left"}
     
     return cfg
 end
