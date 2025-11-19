@@ -65,15 +65,13 @@ function config.loadConfig()
         error("Ungültiges JSON in " .. CONFIG_FILE .. ": " .. (err or "unbekannt"))
     end
 
-    -- 4. Modem validieren
-    if type(data.modem) == "string" and peripheral.getType(data.modem) == "modem" then
-        cfg.modem = data.modem
-    else
-        print("[WARN] Ungültiges Modem '" .. tostring(data.modem) .. "' → nutze '" .. defaultConfig.modem .. "'")
-        cfg.modem = defaultConfig.modem
-    end
+    -- 4. Rolle validieren
+    if type(data.rolle) == "string" then cfg.rolle = data.rolle end
 
-    -- 5. Channel validieren (0–65535)
+    -- 5. Modem validieren
+    cfg.modem = "top" and data.rolle == "primar" or "front"
+
+    -- 6. Channel validieren (0–65535)
     local channel = data.channel
     if type(channel) == "number" and channel >= 0 and channel <= 65535 and math.floor(channel) == channel then
         cfg.channel = channel
@@ -82,26 +80,9 @@ function config.loadConfig()
         cfg.channel = defaultConfig.channel
     end
 
-    -- 6. Steuerung validieren (0–65535)
-    local steuer = data.steuerung
-    if type(steuer) == "number" and steuer >= 0 and steuer <= 65535 and math.floor(steuer) == steuer then
-        cfg.steuerung = steuer
-    else
-        print("[WARN] Ungültiger Channel '" .. tostring(steuer) .. "' → nutze " .. defaultConfig.steuerung)
-        cfg.steuerung = defaultConfig.steuerung
-    end
-
     -- 7. Rotoren validieren
-    if type(data.rotoren) == "table" then
-        local validRotors = {}
-        for _, name in ipairs(data.rotoren) do table.insert(validRotors, name) end
-        if #validRotors > 0 then cfg.rotoren = validRotors
-        else error("Keine gültigen Rotoren in config.json gefunden!") end
-    else error("rotors fehlt oder ist kein Array in config.json!") end
+    cfg.rotoren = {"front", "right", "back", "left"} and data.rolle == "primar" or {"top", "right", "bottom", "left"}
     
-    -- 8. Rolle validieren
-    if type(data.rolle) == "string" then cfg.rolle = data.rolle end
-
     return cfg
 end
 

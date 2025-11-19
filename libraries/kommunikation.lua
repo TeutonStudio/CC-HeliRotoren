@@ -10,8 +10,6 @@ function kommunikation.identifiziereModem(config)
         error("Kein Modem an '" .. config.modem .. "' gefunden!") end
     if not modem.isOpen(config.channel) then
         modem.open(config.channel) end
-    if not modem.isOpen(config.steuerung) then
-        modem.open(config.steuerung) end
     config.modem = modem
 end
 
@@ -26,7 +24,7 @@ end
 -- Empfang: Primär <-> Sekundär
 function kommunikation.interpretiereKommunikation(nachricht, config, status)
     if status.verbindung or nachricht.sender == config.rolle then
-        -- TODO
+        -- TODO nix gibts
     else
         print(verbindungsAusgabe(config.rolle,config.channel))
         status.verbindung = true end
@@ -63,7 +61,7 @@ function kommunikation.sendeKommunikation(config, nachricht, delta)
     while true do
         if os.clock() - (lastStatus or 0) > delta then
             lastStatus = os.clock()
-            config.modem.transmit(config.steuerung, config.steuerung, {
+            config.modem.transmit(config.channel, config.channel, {
                 sender = config.rolle.."-steuerung-info",
                 position = ship.getWorldspacePosition(),
                 linearGeschw = VR.lokaleLinearGeschwindigkeit(),
@@ -80,9 +78,10 @@ function kommunikation.empfangeKommunikation(config, werte)
     while true do
         local event, seite, channel, replyChannel, nachricht, distanz = os.pullEvent("modem_message")
         if channel == config.channel and nachricht then
-            kommunikation.interpretiereKommunikation(nachricht, config, werte) end
-        if channel == config.steuerung and nachricht then
-            kommunikation.interpretiereSteuerung(nachricht, werte) end
+            kommunikation.interpretiereKommunikation(nachricht, config, werte)
+            kommunikation.interpretiereSteuerung(nachricht, werte) 
+
+        end
     end
 end
 

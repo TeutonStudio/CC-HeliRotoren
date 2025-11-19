@@ -5,7 +5,8 @@ local GLOBAL = { x = vector.new(1,0,0), y = vector.new(0,1,0), z = vector.new(0,
 
 
 -- Ermittelt 3 Orthogonale Vektoren zu einer quaternion
-function vektor.erhalteVektorraum(q)
+function vektor.erhalteVektorraum(quat)
+    local q = quat:normalize()
     return q * GLOBAL.x, q + GLOBAL.y, q * GLOBAL.z
 end
 
@@ -13,21 +14,13 @@ local function sign(x) return (x<0 and -1 or 1) end
 
 -- ermittelt den Winkel zwischen zwei Vektoren
 function vektor.gerichteterWinkel(vec1,vec2)
-    local dot = vec1:dot(vec2)
-    local cross = vec1:cross(vec2)
-    local mag = vec1:length() * vec2:length()
-    if mag == 0 then return 0 end
-    return math.deg(math.atan2(cross:length(),dot))
-end -- TODO
+    return math.deg(math.acos(vec1:normalize():dot(vec2:normalize())))
+end
 
 function vektor.orientierterWinkel(vec1, vec2, up)
-    local mag = vec1:length() * vec2:length()
-    if mag == 0 then return 0 end
-
-    local sinWinkel = vec1:cross(vec2):dot(up:normalize()) / mag
-    local cosWinkel = vec1:dot(vec2) / mag
-    local winkel = math.deg(math.acos(cosWinkel)) * sign(sinWinkel) * sign(cosWinkel)
-    return (180 - winkel)
+    local sinWinkel = vec1:normalize():cross(vec2:normalize()):dot(up:normalize())
+    local cosWinkel = vec1:normalize():dot(vec2:normalize())
+    return math.deg(math.atan2(sinWinkel, cosWinkel))
 end
 
 local function GlobalNachLokal(vel)
