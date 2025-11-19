@@ -47,18 +47,18 @@ end
 
 function rotor.aktualisiereRotoren(config, werte, delta) -- Rotorsteuerung
     while true do
-        local azimuth = rotor.azimuth(werte.quaternionHaupt, werte.quaternionHeck)
-        if azimuth then
-            if config.rolle == "primar" then 
+        if config.rolle == "sekundar" then 
+            rotor.setzeRotoren(config,werte.steuerung.y) end
+        if config.rolle == "primar" then 
+            local azimuth = rotor.azimuth(werte.quaternionHaupt, werte.quaternionHeck)
+            if azimuth then
                 for idx, seite in ipairs(config.rotoren) do
                     local vec = vector.new(werte.steuerung.p, werte.steuerung.r, werte.steuerung.c)
                     local winkel = rotorWinkel(azimuth - 90*seitenIndex(seite), vec)
                     rotor.setzeRotor(seite,winkel) end
             end
-            if config.rolle == "sekundar" then 
-                rotor.setzeRotoren(config,werte.steuerung.y) end
         end
-        sleep(delta) end 
+        sleep(delta) end
 end
 
 

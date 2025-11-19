@@ -43,9 +43,7 @@ function config.loadConfig()
         file.write(jsonEncode(defaultConfig))
         file.close()
 
-        cfg.modem = defaultConfig.modem
         cfg.channel = defaultConfig.channel
-        cfg.rotoren = defaultConfig.rotoren
         return cfg
     end
 
