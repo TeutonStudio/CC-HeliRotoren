@@ -37,6 +37,7 @@ function rotor.setzeRotoren(config,winkel)
 end
 
 function rotor.azimuth(qHaupt,qHeck)
+    if not qHaupt or not qHeck then return nil end
     x1, y1, z1 = VR.erhalteVektorraum(qHaupt)
     x2, y2, z2 = VR.erhalteVektorraum(qHeck)
     local v = y1:cross(x2)
@@ -46,9 +47,9 @@ end
 
 function rotor.aktualisiereRotoren(config, werte, delta) -- Rotorsteuerung
     while true do
-        if werte.quaternionHaupt and werte.quaternionHeck then
+        local azimuth = rotor.azimuth(werte.quaternionHaupt, werte.quaternionHeck)
+        if azimuth then
             if config.rolle == "primar" then 
-                local azimuth = rotor.azimuth(werte.quaternionHaupt, werte.quaternionHeck)
                 for idx, seite in ipairs(config.rotoren) do
                     local vec = vector.new(werte.steuerung.p, werte.steuerung.r, werte.steuerung.c)
                     local winkel = rotorWinkel(azimuth - 90*seitenIndex(seite), vec)
@@ -57,8 +58,7 @@ function rotor.aktualisiereRotoren(config, werte, delta) -- Rotorsteuerung
             if config.rolle == "sekundar" then 
                 rotor.setzeRotoren(config,werte.steuerung.y) end
         end
-        sleep(delta) end
-    
+        sleep(delta) end 
 end
 
 
