@@ -79,7 +79,7 @@ function kommunikation.empfangeKommunikation(config, werte)
         local event, seite, channel, replyChannel, nachricht, distanz = os.pullEvent("modem_message")
         if channel == config.channel and nachricht then
             kommunikation.interpretiereKommunikation(nachricht, config, werte)
-            kommunikation.interpretiereSteuerung(nachricht, werte) 
+            kommunikation.interpretiereSteuerung(nachricht, werte.steuerung)
 
         end
     end
