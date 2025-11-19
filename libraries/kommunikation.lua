@@ -44,7 +44,7 @@ function kommunikation.interpretiereSteuerung(nachricht, eingabe)
         eingabe.r = nachricht.roll or 0
         eingabe.c = nachricht.coll or 0
         eingabe.y = nachricht.yaw or 0
-        print("Steuerungsbefehl empfangen",eingabe)
+        print("Steuerungsbefehl empfangen",eingabe) 
     end
 end
 

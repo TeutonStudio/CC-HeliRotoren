@@ -13,7 +13,7 @@ local werte = {verbindung = false, quaternionHaupt = nil, quaternionHeck = nil, 
 
 -- Non-blocking: Senden in separater Schleife
 parallel.waitForAny(
+    function() KV.empfangeKommunikation(cfg, werte) end,
     function() KV.sendeKommunikation(cfg, false, 0.02) end,
-    function() RV.aktualisiereRotoren(cfg, werte, 0.02) end,
-    function() KV.empfangeKommunikation(cfg, werte) end
+    function() RV.aktualisiereRotoren(cfg, werte, 0.02) end
 )

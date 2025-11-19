@@ -7,8 +7,13 @@ local function kreis(winkel)
     local y = math.sin(winkel)
     return vector.new(x,y,1)
 end
+
+local function seitenWinkel(seite,winkel)
+    return math.rad(winkel + 90 * seitenIndex(seite))
+end
+
 -- Ermittelt die Rotorstellung nach dem azimuthWinkel und der steurung vec=(pitch,roll,collective)
-local function rotorWinkel(azimuth,vec) return vec:dot(kreis(math.rad(azimuth))) end
+local function rotorWinkel(azimuth,seite,vec) return vec:dot(kreis(seitenWinkel(seite,azimuth))) end
 
 -- Indexiert die eingabe Seiten des Rechners (Kompatibel für Vertikal & Horizontal)
 local function seitenIndex(seite) -- TODO auf vierlistiges Argument umprogrammieren, dass einem find() -> int entspricht
@@ -49,13 +54,13 @@ function rotor.aktualisiereRotoren(config, werte, delta) -- Rotorsteuerung
     while true do
         if config.rolle == "sekundar" then 
             rotor.setzeRotoren(config,werte.steuerung.y) end
+        
         if config.rolle == "primar" then 
             local azimuth = rotor.azimuth(werte.quaternionHaupt, werte.quaternionHeck)
-            if azimuth then
-                for idx, seite in ipairs(config.rotoren) do
-                    local vec = vector.new(werte.steuerung.p, werte.steuerung.r, werte.steuerung.c)
-                    local winkel = rotorWinkel(azimuth - 90*seitenIndex(seite), vec)
-                    rotor.setzeRotor(seite,winkel) end
+            if azimuth then for idx, seite in ipairs(config.rotoren) do
+                local vec = vector.new(werte.steuerung.p, werte.steuerung.r, werte.steuerung.c)
+                local winkel = rotorWinkel(azimuth,seite, vec)
+                rotor.setzeRotor(seite,winkel) end
             end
         end
         sleep(delta) end
