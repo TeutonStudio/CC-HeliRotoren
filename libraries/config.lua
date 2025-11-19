@@ -8,8 +8,6 @@ local CONFIG_FILE = "config.json"
 local defaultConfig = {
     modem = "top",
     channel = 69,
-    steuerung = 420,
-    rotoren = {"front", "right", "back", "left"},
     rolle = "primar"
 }
 
