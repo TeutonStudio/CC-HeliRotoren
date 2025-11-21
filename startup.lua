@@ -1,17 +1,18 @@
 local CFGV = require("libraries/config")
 local KV = require("libraries/kommunikation")
-local VR = require("libraries/vektor")
+-- local VR = require("libraries/vektor")
 local RV = require("libraries/rotor")
-local PID   = require("libraries/steuerung")
+local PID   = require("libraries/steuerung") -- TODO
 
 local cfg = CFGV.loadConfig()
 KV.identifiziereModem(cfg)
 
-local werte = {verbindung = false, quaternionHaupt = nil, quaternionHeck = nil, steuerung = { p=0, r=0, c=0, y=0 }}
+local werte = {verbindung = false}
+local delta = .02
 
 -- Non-blocking: Senden in separater Schleife
 parallel.waitForAny(
+    function() KV.sendeKommunikation(cfg, delta) end,
     function() KV.empfangeKommunikation(cfg, werte) end,
-    function() KV.sendeKommunikation(cfg, false, 0.02) end,
-    function() RV.aktualisiereRotoren(cfg, werte, 0.02) end
+    function() RV.aktualisiereRotoren(cfg, delta) end
 )

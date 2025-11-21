@@ -1,6 +1,21 @@
 -- libraries/rotor.lua
 local rotor = {}
-local VR = require("libraries/vektor")
+-- local VR = require("libraries/vektor")
+
+-- Zustand der Rotoren
+-- local quaternionHaupt = quaternion.new(vector.new(),1)
+-- local quaternionHeck = quaternion.new(vector.new(),1)
+local pitch = 0
+local roll = 0
+local coll = 0
+local yaw = 0
+
+function rotor.steuern(p,r,c,y)
+    pitch = p
+    roll = r
+    coll = c
+    yaw = y
+end
 
 local function kreis(winkel)
     local x = math.cos(winkel)
@@ -8,61 +23,38 @@ local function kreis(winkel)
     return vector.new(x,y,1)
 end
 
-local function seitenWinkel(seite,winkel)
-    return math.rad(winkel + 90 * seitenIndex(seite))
-end
-
 -- Ermittelt die Rotorstellung nach dem azimuthWinkel und der steurung vec=(pitch,roll,collective)
-local function rotorWinkel(azimuth,seite,vec) return vec:dot(kreis(seitenWinkel(seite,azimuth))) end
-
--- Indexiert die eingabe Seiten des Rechners (Kompatibel für Vertikal & Horizontal)
-local function seitenIndex(seite) -- TODO auf vierlistiges Argument umprogrammieren, dass einem find() -> int entspricht
-    if seite == "front"  then return 0 end
-    if seite == "top"    then return 0 end
-    if seite == "right"  then return 1 end
-    if seite == "back"   then return 2 end
-    if seite == "bottom" then return 2 end
-    if seite == "left"   then return 3 end
-end
+local function rotorWinkel(azimuth,vec) return vec:dot(kreis(azimuth)) end
 
 -- Setzt die Rotorstellung nach einer Seite, des azimuthWinkel und steuerung vec=(pitch,roll,collective)
 function rotor.setzeRotor(seite,winkel)
-    local inv = seite == "back" or seite == "right" or seite == "bottom"
-    --local korWinkel = rotorWinkel(azimuth - 90*seitenIndex(seite),vec) * (inv and -1 or 1)
+    local inv = seite == "front" or seite == "right" or seite == "bottom"
     local rotor = peripheral.wrap(seite)
     if rotor then
     	local rotorWinkelDef = rotor.setFlapAngle
-    	if rotorWinkelDef then rotorWinkelDef(winkel) end
+    	if rotorWinkelDef then rotorWinkelDef(winkel * (inv and -1 or 1)) end
 	else end
 end
 
 function rotor.setzeRotoren(config,winkel)
     for idx, seite in ipairs(config.rotoren) do
-        rotor.setzeRotor(seite,winkel) end
+        local w = 0
+        if winkel == nil then
+            local x,y,z = quaternion.fromShip():toEuler()
+            local st = vector.new(pitch,roll,coll)
+            local azimuth = x + math.rad(90) * config.rotoren.find(seite)
+            -- print(math.deg(azimuth))
+            w = rotorWinkel(azimuth,st)
+        else w = winkel end
+        rotor.setzeRotor(seite,w) end
 end
 
-function rotor.azimuth(qHaupt,qHeck)
-    if not qHaupt or not qHeck then return nil end
-    x1, y1, z1 = VR.erhalteVektorraum(qHaupt)
-    x2, y2, z2 = VR.erhalteVektorraum(qHeck)
-    local v = y1:cross(x2)
-    return VR.orientierterWinkel(x1,v,y1)
-end
-
-
-function rotor.aktualisiereRotoren(config, werte, delta) -- Rotorsteuerung
+function rotor.aktualisiereRotoren(config, delta) -- Rotorsteuerung
     while true do
         if config.rolle == "sekundar" then 
-            rotor.setzeRotoren(config,werte.steuerung.y) end
-        
-        if config.rolle == "primar" then 
-            local azimuth = rotor.azimuth(werte.quaternionHaupt, werte.quaternionHeck)
-            if azimuth then for idx, seite in ipairs(config.rotoren) do
-                local vec = vector.new(werte.steuerung.p, werte.steuerung.r, werte.steuerung.c)
-                local winkel = rotorWinkel(azimuth,seite, vec)
-                rotor.setzeRotor(seite,winkel) end
-            end
-        end
+            rotor.setzeRotoren(config,yaw) end
+        if config.rolle == "primar" then
+            rotor.setzeRotoren(config,nil) end
         sleep(delta) end
 end
 

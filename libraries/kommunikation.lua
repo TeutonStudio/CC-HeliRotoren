@@ -2,65 +2,32 @@
 local kommunikation = {}
 
 local VR = require("libraries/vektor")
+local RV = require("libraries/rotor")
+
+local function keinModem(seite) return "[FEHLER] Kein Modem an '" .. seite .. "' gefunden!" end
 
 -- Identifiziert ob das Modem an config.modem seite ist und schreibt das peripheral in die config
 function kommunikation.identifiziereModem(config)
     print("[INFO] Starte Rotor-Steuerung auf Kanal: " .. config.channel)
     print("[INFO] Rotoren: " .. table.concat(config.rotoren, ", "))
     local modem = peripheral.wrap(config.modem)
-    if not modem then 
-        error("Kein Modem an '" .. config.modem .. "' gefunden!") end
+    if not modem then error(keinModem(config.modem)) end
     if not modem.isOpen(config.channel) then
         modem.open(config.channel) end
     config.modem = modem
 end
 
-
-local function verbindungsAusgabe(rolle,channel)
-    local partner = ""
-    if rolle == "primar" then partner = "Heckrotor" end
-    if rolle == "sekundar" then partner = "Hauptrotor" end
-    return "[VERBUNDEN] "..partner.." gefunden! (Kanal "..channel..")"
-end
-
--- Empfang: Primär <-> Sekundär
-function kommunikation.interpretiereKommunikation(nachricht, config, status)
-    if status.verbindung or nachricht.sender == config.rolle then
-        -- TODO nix gibts
-    else
-        print(verbindungsAusgabe(config.rolle,config.channel))
-        status.verbindung = true end
-    local p_s = config.rolle == "primar" and nachricht.sender == "sekundar"
-    local s_p = config.rolle == "sekundar" and nachricht.sender == "primar"
-    if p_s then
-        status.qK = nachricht.quaternionHeck
-        status.qH = quaternion.fromShip() end
-    if s_p then
-        status.qH = nachricht.quaternionHaupt
-        status.qK = quaternion.fromShip() end
-end
-
-function kommunikation.interpretiereSteuerung(nachricht, eingabe)
+function kommunikation.interpretiereSteuerung(nachricht)
     if nachricht.sender == "steuerung" then
-        eingabe.p = nachricht.pitch or 0
-        eingabe.r = nachricht.roll or 0
-        eingabe.c = nachricht.coll or 0
-        eingabe.y = nachricht.yaw or 0
-        print("Steuerungsbefehl empfangen",eingabe) 
-    end
+        print("Steuerungsbefehl empfangen")
+        print(nachricht.pitch, nachricht.roll, nachricht.coll, nachricht.yaw)
+        RV.steuern(nachricht.pitch or 0, nachricht.roll or 0, nachricht.coll or 0, nachricht.yaw or 0) end
 end
 
--- Nachrichten generieren
-function kommunikation.erhalteNachricht(rolle)
-    if rolle == "primar" then
-        return { sender = "primar", quaternionHaupt = quaternion.fromShip() } end
-    if rolle == "sekundar" then
-        return { sender = "sekundar", quaternionHeck = quaternion.fromShip() } end
-end
 
-local lastStatus = 0
 -- Senden
-function kommunikation.sendeKommunikation(config, nachricht, delta)
+local lastStatus = 0
+function kommunikation.sendeKommunikation(config, delta)
     while true do
         if os.clock() - (lastStatus or 0) > delta then
             lastStatus = os.clock()
@@ -70,20 +37,29 @@ function kommunikation.sendeKommunikation(config, nachricht, delta)
                 linearGeschw = VR.lokaleLinearGeschwindigkeit(),
                 winkelGeschw = VR.lokaleWinkelGeschwindigkeit()
             } ) end
-        if config.rolle == "sekundar" then sleep(delta/2) end
-        local packet = nachricht or kommunikation.erhalteNachricht(config.rolle)
-        config.modem.transmit(config.channel, config.channel, packet)
         sleep(delta)
     end
 end
 
-function kommunikation.empfangeKommunikation(config, werte)
+local function verbindungsAusgabe(rolle,channel)
+    local partner = ""
+    if rolle == "primar" then partner = "Heckrotor" end
+    if rolle == "sekundar" then partner = "Hauptrotor" end
+    return "[VERBUNDEN] "..partner.." gefunden! (Kanal "..channel..")"
+end
+
+-- Empfangen
+function kommunikation.empfangeKommunikation(config,status)
     while true do
         local event, seite, channel, replyChannel, nachricht, distanz = os.pullEvent("modem_message")
+        if status.verbindung or nachricht.sender == config.rolle then
+            -- TODO nix gibts
+        else
+            print(verbindungsAusgabe(config.rolle,config.channel))
+            status.verbindung = true end
         if channel == config.channel and nachricht then
-            kommunikation.interpretiereKommunikation(nachricht, config, werte)
-            kommunikation.interpretiereSteuerung(nachricht, werte.steuerung)
-
+            -- kommunikation.interpretiereKommunikation(nachricht, config, status)
+            kommunikation.interpretiereSteuerung(nachricht)
         end
     end
 end
